@@ -11,10 +11,14 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/items")
@@ -23,13 +27,18 @@ public class ItemController {
 
     private final ItemUseCase useCase;
 
+    private final Logger logger = LoggerFactory.getLogger(ItemController.class);
+
     @GetMapping("")
     public ResponseEntity<ResponseGenericObject<List<Item>>> getAllItems() {
         return ResponseEntity.ok().body(useCase.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseGenericObject<Optional<Item>>> getItemById(@PathVariable("id") Long id) {
+    public ResponseEntity<ResponseGenericObject<Optional<Item>>> getItemById(@PathVariable("id") Long id, @RequestParam(name="name") String name
+            , @RequestHeader(name="token-request") String token_request) {
+        logger.info("Parametro inyectado: name = " + name);
+        logger.info("Header inyectado: token-request = " + token_request);
         return ResponseEntity.ok().body(useCase.findById(id));
     }
     
