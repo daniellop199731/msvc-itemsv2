@@ -7,9 +7,9 @@ import com.daniel.springcloud.msvc.items.domain.model.Item;
 import com.daniel.springcloud.msvc.items.domain.port.in.ItemUseCase;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,12 +30,12 @@ public class ItemController {
     private final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
     @GetMapping("")
-    public ResponseEntity<ResponseGenericObject<List<Item>>> getAllItems() {
+    public ResponseEntity<Mono<ResponseGenericObject<List<Item>>>> getAllItems() {
         return ResponseEntity.ok().body(useCase.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseGenericObject<Optional<Item>>> getItemById(@PathVariable("id") Long id, @RequestParam(name="name") String name
+    public ResponseEntity<Mono<ResponseGenericObject<Item>>> getItemById(@PathVariable("id") Long id, @RequestParam(name="name") String name
             , @RequestHeader(name="token-request") String token_request) {
         logger.info("Parametro inyectado: name = " + name);
         logger.info("Header inyectado: token-request = " + token_request);

@@ -16,9 +16,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ItemApplicationService implements ItemUseCase{
+public class ItemApplicationService /*implements ItemUseCase*/{
 
-    private final ProductFeignClient client;
+    /*private final ProductFeignClient client;
 
     private List<Product> products;
     private Product product;
@@ -98,6 +98,6 @@ public class ItemApplicationService implements ItemUseCase{
                 null
             );            
         }
-    }
+    }*/
     
 }
