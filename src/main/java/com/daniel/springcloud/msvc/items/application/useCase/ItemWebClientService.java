@@ -18,6 +18,7 @@ import com.daniel.springcloud.msvc.items.domain.model.Product;
 import com.daniel.springcloud.msvc.items.domain.port.in.ItemUseCase;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
 
 @Primary
 @Service
@@ -38,85 +39,62 @@ public class ItemWebClientService implements ItemUseCase {
     private static final String FOUND_ITEM = "Item encontrado";
 
     @Override
-    public ResponseGenericObject<List<Item>> findAll() {
-        items = this.client.build()
-        .get()
-        .uri("/api/products")
-        .accept(MediaType.APPLICATION_JSON)
-        .retrieve()
-        .bodyToFlux(Product.class)
-        .map(product -> new Item(product, random.nextInt(10) + 1))
-        .collectList()
-        .block();
+    public Mono<ResponseGenericObject<List<Item>>> findAll() {
 
-        if (items == null){
-            return new ResponseGenericObject<>(
-                true
-                , NOT_FOUND_ITEMS
-                , null
-            );
-        }        
+        return this.client.build()
+            .get()
+            .uri("/api/products")
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToFlux(Product.class)
+            .map(product -> new Item(product, random.nextInt(10) + 1))
+            .collectList()
+            .map(items -> {
 
-        if (items.isEmpty()){
-            return new ResponseGenericObject<>(
-                true
-                , NOT_FOUND_ITEMS
-                , null
-            );
-        }
+                if (items.isEmpty()) {
+                    return new ResponseGenericObject<>(
+                        true,
+                        NOT_FOUND_ITEMS,
+                        null
+                    );
+                }
 
-        return new ResponseGenericObject<>(
-            true
-            , FOUND_ITEMS
-            , items
-        );
+                return new ResponseGenericObject<>(
+                    true,
+                    FOUND_ITEMS,
+                    items
+                );
+            });
     }
 
     @Override
-    public ResponseGenericObject<Optional<Item>> findById(long id) {
-        Map<String, Long> params = new HashMap<>();
-        params.put("id", id);
-        try{
-            item = Optional.ofNullable(
-                this.client.build()
-                .get()
-                .uri("/api/products/{id}", params)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(Product.class)
-                .map(product -> new Item(product, random.nextInt(10) + 1))
-                .block()
-            );
+    public Mono<ResponseGenericObject<Item>> findById(long id) {
 
-            if (item.isEmpty()){
+        return this.client.build()
+            .get()
+            .uri("/api/products/{id}", id)
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .bodyToMono(Product.class)
+            .map(product -> new Item(product, random.nextInt(10) + 1))
+            .map(item -> {
+
+                if (item.getProduct() == null ||
+                    item.getProduct().getId() == null) {
+
+                    return new ResponseGenericObject<>(
+                        true,
+                        NOT_FOUND_ITEM,
+                        null
+                    );
+                }
+
                 return new ResponseGenericObject<>(
-                    true
-                    , NOT_FOUND_ITEM
-                    , null
-                );                
-            }            
-
-            if (item.get().getProduct().getId() == null){
-                return new ResponseGenericObject<>(
-                    true
-                    , NOT_FOUND_ITEM
-                    , null
-                );                
-            }
-
-            return new ResponseGenericObject<>(
-                true
-                , FOUND_ITEM
-                , item
-            );            
-
-        } catch (HttpMessageNotWritableException ex){
-            return new ResponseGenericObject<>(
-                false
-                , DEFAULT_ERROR_MESSAGE
-                , null
-            );
-        }
+                    true,
+                    FOUND_ITEM,
+                    item
+                );
+            });
     }
     
 }

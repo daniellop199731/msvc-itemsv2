@@ -1,14 +1,15 @@
 package com.daniel.springcloud.msvc.items.domain.port.in;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.daniel.springcloud.msvc.items.application.utils.ResponseGenericObject;
 import com.daniel.springcloud.msvc.items.domain.model.Item;
 
+import reactor.core.publisher.Mono;
+
 public interface ItemUseCase {
     
-    ResponseGenericObject<List<Item>> findAll();
-    ResponseGenericObject<Optional<Item>> findById(long id);
+    Mono<ResponseGenericObject<List<Item>>> findAll();
+    Mono<ResponseGenericObject<Item>> findById(long id);
 
 }
