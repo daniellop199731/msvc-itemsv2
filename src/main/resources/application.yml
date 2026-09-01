@@ -1,0 +1,22 @@
+
+#Seccion de configuracion personalizada de resilience4j - circuitbreaker
+#Esto reemplaza lo configurado en el archivo AppConfig.java, si se desea se puede eliminar
+#dicho archivo 
+resilience4j:
+  circuitbreaker:
+    configs:
+      defecto:                                          #Nombre de la configuracion
+        sliding-window-size: 6                          #Muestreo de solicitudes: Por defecto son 100, se configura para 10
+        failure-rate-threshold: 50                      #Porcentaje de fallo: Por defecto son 50%, se deja en 50%
+        wait-duration-in-open-state: 20s                #Duracion en segundos de espera en estado abierto: Por defecto son 60s, se configura a 10s
+        permitted-number-of-calls-in-half-open-state: 4 #Numero de llamadas permitidas en estado semi abierto: Por defecto son 10, se configuran 5
+    instances:                  #
+      items:                    #
+        base-config: defecto    #De esta manera se le asigna a 'items' que funcionara con la configuracion 'defecto'
+  timelimiter:                  
+    configs:                    
+      defecto:                  
+        timeout-duration: 4s    #Duracion en segundos maxima para ejecutar un llamado, si se pasa de este tiempo se considera un fallo
+    instances:
+      items:
+        base-config: defecto
