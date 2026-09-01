@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.timelimiter.TimeLimiterConfig;
 
 /**
  * AppConfig
@@ -36,6 +37,9 @@ public class AppConfig {
                     .permittedNumberOfCallsInHalfOpenState(5)//Numero de llamadas permitidas en estado semi abierto: Por defecto son 10, se configuran 5
                     .build()
                 )
+                .timeLimiterConfig(
+                    TimeLimiterConfig.custom().timeoutDuration(Duration.ofSeconds(3)).build()
+                )//Duracion en segundos maxima para ejecutar un llamado, si se pasa de este tiempo se considera un fallo
                 .build();
             }            
             return new Resilience4JConfigBuilder(id).circuitBreakerConfig(CircuitBreakerConfig.ofDefaults()).build();

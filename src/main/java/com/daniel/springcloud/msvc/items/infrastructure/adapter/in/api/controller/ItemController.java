@@ -42,8 +42,8 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseGenericObject<Optional<Item>>> getItemById(@PathVariable("id") Long id, @RequestParam(name="name") String name
-            , @RequestHeader(name="token-request") String token_request) {
+    public ResponseEntity<ResponseGenericObject<Optional<Item>>> getItemById(@PathVariable("id") Long id, @RequestParam(name="name", required = false) String name
+            , @RequestHeader(name="token-request", required = false) String token_request) {
         //logger.info("Parametro inyectado: name = " + name);
         //logger.info("Header inyectado: token-request = " + token_request);        
         ResponseGenericObject<Optional<Item>> response = cBreakerFactory.create("items").run(
